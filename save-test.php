@@ -76,34 +76,39 @@ function save_options() {
 	
 		global $wpdb;
 	
-
+		$table = array();
+		foreach($_POST['data'] as $key){
+			$table[$key['name']] = $key['value'];
+		}		
 	
-	  	// Récupération des données du form
-		$params = array();
-
-		// Mise en place des datas dans le tableau
-		parse_str($_POST['data'], $params);
-	
-//		var_dump($params);
-	
-		$yolo = serialize($_POST['data']);
-	
-//	var_dump($yolo);
-	
-	$table = array();
-	foreach($_POST['data'] as $key){
-		$table[$key['name']] = $key['value'];
-	}		
-	
-	var_dump(serialize($table));
+		$data = serialize($table);
 	
 		foreach($_POST['data'] as $key){		
 			if($key['name'] === 'submitForm'){
 				$sectionName = $key['value'];
 			}
 		}
+		
+//		var_dump($sectionName);
 	
-		$results = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}keliosis");
+		$results = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}keliosis WHERE name = '$sectionName'");
+	
+		var_dump($results);
+	
+		if($results != null){
+			var_dump('existe en bdd');
+			foreach($results as $item){
+				$id = $item->id;
+				$name = $item->name;
+				$value = $item->value;
+			}
+			var_dump($id.$name.$value);
+			$db = $wpdb->get_results( "UPDATE {$wpdb->prefix}keliosis SET value = '$data' WHERE name = '$sectionName'");
+			var_dump($db);
+			
+		} else{
+			var_dump('n\'existe pas en bdd');
+		}
 	
 //	var_dump(serialize($results));
 	
