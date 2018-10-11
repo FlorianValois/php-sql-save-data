@@ -10,6 +10,10 @@ Domain Path: /languages/
 Version: 0.1
 */
 
+if (!defined('ABSPATH')) {
+	exit;
+}
+
 add_action('admin_menu','test_plugin_setup_menu');
 function test_plugin_setup_menu(){
       add_menu_page('Test Plugin Page', 'Test Plugin', 'manage_options', 'test-plugin', 'test_init' );
@@ -39,8 +43,9 @@ function test_init(){
   
   ?>
   
-  <form id="save-test" class="formAjax" method="post" action="" name="">
-    <input type="text" id="" name="input_1" value="">
+  <form id="save-test" class="formAjax" method="post" name="">
+
+    <input type="text" id="" class="regular-text" name="input_1" style="width: 300px;" value="">
     <input type="text" id="" name="input_11" value="">
     <input type="text" id="" name="input_12" value="">
     <button type="submit">Envoyer <i class="far fa-save"></i></button>
@@ -66,7 +71,15 @@ function test_init(){
   <div id="yolo"></div>
 
   <?php
-		
+		$insertDataRow = array(
+		'form_01',
+		'form_02',
+		'form_03'
+	);
+	
+	foreach($insertDataRow as $key){
+		echo $key.'<br>';
+	}
 	
 }
 
@@ -78,7 +91,7 @@ function save_options() {
 	
 		$table = array();
 		foreach($_POST['data'] as $key){
-			$table[$key['name']] = $key['value'];
+			$table[$key['name']] = htmlspecialchars($key['value']);
 		}		
 	
 		$data = serialize($table);
@@ -88,30 +101,30 @@ function save_options() {
 				$sectionName = $key['value'];
 			}
 		}
+			
+		$results = $wpdb->query( "SELECT * FROM {$wpdb->prefix}keliosis WHERE name = '$sectionName'");
 		
-//		var_dump($sectionName);
-	
-		$results = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}keliosis WHERE name = '$sectionName'");
-	
-		var_dump($results);
-	
 		if($results != null){
-			var_dump('existe en bdd');
+//			var_dump('existe en bdd');
 			foreach($results as $item){
 				$id = $item->id;
 				$name = $item->name;
 				$value = $item->value;
 			}
-			var_dump($id.$name.$value);
-			$db = $wpdb->get_results( "UPDATE {$wpdb->prefix}keliosis SET value = '$data' WHERE name = '$sectionName'");
-			var_dump($db);
+			$test = $wpdb->query( "UPDATE {$wpdb->prefix}keliosis SET value = '$data' WHERE name = '$sectionName'" );
+			
+			// Sauvegarde des data
+			$update_options = json_encode(array(
+					'update' => $test
+			));
+
+			echo $update_options;  
+			
 			
 		} else{
-			var_dump('n\'existe pas en bdd');
+//			var_dump('n\'existe pas en bdd');
 		}
-	
-//	var_dump(serialize($results));
-	
+		
 		foreach($results as $item){
 //			var_dump($item->id);
 //			var_dump($item->name);
@@ -226,15 +239,16 @@ function save_options() {
 function jal_install() {
 	global $wpdb;
 
-	$table_name = $wpdb->prefix . 'keliosis';
+//	$table_name = $wpdb->prefix . 'keliosis';
 	
 	$charset_collate = $wpdb->get_charset_collate();
 
-	$sql = "CREATE TABLE $table_name (
-		id mediumint(9) NOT NULL AUTO_INCREMENT,
-		name tinytext NOT NULL,
+	$sql = "CREATE TABLE {$wpdb->prefix}keliosis (
+		id bigint(20) NOT NULL AUTO_INCREMENT,
+		name varchar(191) NOT NULL,
 		value longtext NOT NULL,
-		PRIMARY KEY  (id)
+		PRIMARY KEY  (id),
+		UNIQUE KEY name (name)
 	) $charset_collate;";
 
 	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
@@ -243,31 +257,36 @@ function jal_install() {
 
 }
 
-//function jal_uninstall() {
-//	 global $wpdb;
-//	 $table_name = $wpdb->prefix . 'keliosis';
-//	 $sql = "DROP TABLE IF EXISTS $table_name";
-//	 $wpdb->query($sql);
-//}
+function jal_uninstall() {
+	 global $wpdb;
+	 $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}keliosis");
+}
 
-//function jal_install_data() {
-//	global $wpdb;
-//	
-//	$welcome_name = 'Mr. WordPress';
-//	$welcome_text = 'Congratulations, you just completed the installation!';
-//	
-//	$table_name = $wpdb->prefix . 'liveshoutbox';
-//	
+function jal_install_data() {
+	global $wpdb;
+	
+	$table_name = $wpdb->prefix.'keliosis';
+	
+	$insertDataRow = array(
+		'form_01',
+		'form_02',
+		'form_03'
+	);
+	
+	foreach($insertDataRow as $key){
+		$wpdb->query( "INSERT {$wpdb->prefix}keliosis SET name = '$key'" );
+	}
+	
+	
 //	$wpdb->insert( 
-//		$table_name, 
-//		array( 
-//			'time' => current_time( 'mysql' ), 
-//			'name' => $welcome_name, 
-//			'text' => $welcome_text, 
-//		) 
+//		$table_name,
+//			array( 
+//				'id' => 1, 
+//				'name' => 'form_01'
+//			)
 //	);
-//}
+}
 
 register_activation_hook( __FILE__, 'jal_install' );
-//register_deactivation_hook( __FILE__, 'jal_uninstall' );
-//register_activation_hook( __FILE__, 'jal_install_data' );
+register_deactivation_hook( __FILE__, 'jal_uninstall' );
+register_activation_hook( __FILE__, 'jal_install_data' );

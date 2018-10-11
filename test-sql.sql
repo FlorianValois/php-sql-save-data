@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le :  lun. 08 oct. 2018 à 15:59
+-- Généré le :  mer. 10 oct. 2018 à 14:49
 -- Version du serveur :  5.7.19
 -- Version de PHP :  7.1.9
 
@@ -35,7 +35,16 @@ CREATE TABLE IF NOT EXISTS `wp_keliosis` (
   `value` longtext COLLATE utf8mb4_unicode_520_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
+
+--
+-- Déchargement des données de la table `wp_keliosis`
+--
+
+INSERT INTO `wp_keliosis` (`id`, `name`, `value`) VALUES
+(8, 'form_01', 'a:4:{s:7:\"input_1\";s:3:\"123\";s:8:\"input_11\";s:3:\"123\";s:8:\"input_12\";s:3:\"123\";s:10:\"submitForm\";s:7:\"form_01\";}'),
+(4, 'form_02', 'a:4:{s:7:\"input_2\";s:9:\"wxcwxcwxc\";s:8:\"input_21\";s:9:\"wxcwxcwxc\";s:8:\"input_22\";s:9:\"wxcwxcwxc\";s:10:\"submitForm\";s:7:\"form_02\";}'),
+(9, 'form_03', 'a:4:{s:7:\"input_3\";s:7:\"azezaea\";s:8:\"input_31\";s:6:\"azeaze\";s:8:\"input_32\";s:9:\"azeazeaze\";s:10:\"submitForm\";s:7:\"form_03\";}');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
