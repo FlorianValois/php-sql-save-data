@@ -91,7 +91,9 @@ function save_options() {
 	
 		$table = array();
 		foreach($_POST['data'] as $key){
-			$table[$key['name']] = htmlspecialchars($key['value']);
+            if(!empty($key['value']) && $key['name'] != 'submitForm'){
+			   $table[$key['name']] = htmlspecialchars($key['value']);
+            }
 		}		
 	
 		$data = serialize($table);
@@ -118,120 +120,9 @@ function save_options() {
 					'update' => $test
 			));
 
-			echo $update_options;  
-			
-			
-		} else{
-//			var_dump('n\'existe pas en bdd');
-		}
-		
-		foreach($results as $item){
-//			var_dump($item->id);
-//			var_dump($item->name);
-//			var_dump($item->value);
-//			if($item->name === $sectionName){
-//				var_dump($item->id);
-//				var_dump($item->name);
-//				var_dump($item->value);
-//			} else {
-//				var_dump('pas encore en bdd');
-//			}
-		}
-	
-	
-//	var_dump(serialize($_POST['data']));
-//		if(!$sectionName){
-//			$wpdb->insert(
-//				$wpdb->prefix.'keliosis',
-//				array(
-//					'name' => $sectionName,
-//					'value' => $yolo
-//				)
-//			);
-//		} else{
-//			$wpdb->replace(
-//				$wpdb->prefix.'keliosis',
-//				array(
-//					'name' => $sectionName,
-//					'value' => serialize($table)
-//						 )
-//			);
-//		}
-	
-	
-		foreach($_POST['data'] as $key){				
-			
-			
-			if($key['name'] === 'submitForm'){
-				$yolo = $key['value'];
-//				$results = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}keliosis WHERE name = '".$key['value']."'", OBJECT );
-//				var_dump($_POST['data']);
-//				var_dump($results);
-//				var_dump($key['value']);
-				
-			}
-			
-			
-//			var_dump($yolo);
-			
+			echo $update_options;
 		} 
-	
-//UPDATE `wp_keliosis` SET `value` = 'test' WHERE `name` = 'backtotop' 
-	
-//	  $table_name = $wpdb->prefix . 'keliosis';
-	
-	
-//		var_dump($_POST['data']);
-	
-	
-	
-	
-//	foreach($_POST['data'] as $key){
-//		if($key['name'] === $results[0]->name){
-//			var_dump('yolo');
-//			$wpdb->insert(
-//				$wpdb->prefix.'keliosis',
-//				array('name' => 'sdf','value' => 'sdfg')
-//			);
-//		} else{
-//			var_dump('pas yolo');
-//		}
-//		var_dump($key['name']);
-//		var_dump($results[0]->name);
-//	}
 
-	
-//			
-//		$wpdb->insert( 
-//			$table_name, 
-//			array( 
-//				'name' => 'test', 
-//				'value' => $params
-//			) 
-//		);
-
-	
-	
-//  	// Récupération des données du form
-//		$params = array();
-//
-//		// Mise en place des datas dans le tableau
-//		parse_str($_POST['data'], $params);
-//
-//		// Sauvegarde des données
-//		$option_name = 'test' ;
-//
-//		if($_POST['data']){
-//
-//			// Sauvegarde des data
-//			$update_options = json_encode(array(
-//					'update' => update_option( $option_name, $params )
-//			));
-//
-//			echo $update_options;   
-//
-//		}
-//		
 		die(); 
 }
 
@@ -276,15 +167,7 @@ function jal_install_data() {
 	foreach($insertDataRow as $key){
 		$wpdb->query( "INSERT {$wpdb->prefix}keliosis SET name = '$key'" );
 	}
-	
-	
-//	$wpdb->insert( 
-//		$table_name,
-//			array( 
-//				'id' => 1, 
-//				'name' => 'form_01'
-//			)
-//	);
+  
 }
 
 register_activation_hook( __FILE__, 'jal_install' );
