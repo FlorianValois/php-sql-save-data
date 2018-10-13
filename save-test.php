@@ -67,7 +67,13 @@ function test_init(){
     <button type="submit">Envoyer <i class="far fa-save"></i></button>
     <input type="hidden" name="submitForm" value="form_03">
   </form>
-  
+<!--
+  <script>
+  jQuery('.formAjax').on('submit', function(){
+    jQuery(this).addClass('yolo');
+  });
+  </script>
+-->
   <div id="yolo"></div>
 
   <?php
@@ -80,6 +86,18 @@ function test_init(){
 	foreach($insertDataRow as $key){
 		echo $key.'<br>';
 	}
+  
+  
+  
+  global $wpdb;
+  $name_data = 'form_01';
+  $results = $wpdb->query( "SELECT * FROM {$wpdb->prefix}keliosis WHERE name='$name_data'");
+  foreach($results as $item){
+      $id = $item->id;
+      $name = $item->name;
+      $value = $item->value;
+  var_dump($name.$value);
+  }
 	
 }
 
@@ -90,9 +108,17 @@ function save_options() {
 		global $wpdb;
 	
 		$table = array();
+  
+       $old = array('"', '\'', '<', '>');                 
+       $new = array('&quot;', '&#039;', '&lt;', '&gt;');                 
+                        
+                        
 		foreach($_POST['data'] as $key){
             if(!empty($key['value']) && $key['name'] != 'submitForm'){
-			   $table[$key['name']] = htmlspecialchars($key['value']);
+                $yolo = str_replace($old, $new, $key['value']);
+			    $table[$key['name']] = htmlspecialchars($yolo);
+//			    $table[$key['name']] = htmlspecialchars($key['value']);
+                var_dump($table[$key['name']]);
             }
 		}		
 	
@@ -169,6 +195,12 @@ function jal_install_data() {
 	}
   
 }
+
+//function keliosis_data($name_data){
+//  global $wpdb;
+//  
+//  die();
+//}
 
 register_activation_hook( __FILE__, 'jal_install' );
 register_deactivation_hook( __FILE__, 'jal_uninstall' );
