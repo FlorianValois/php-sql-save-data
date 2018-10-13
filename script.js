@@ -2,11 +2,12 @@
 
 jQuery(document).ready(function ($) {
 
-    window.alert = function() {};
-  
 	// Save changes
 	$('.formAjax').on('submit', function (e) {
 		e.preventDefault();
+      
+        window.alert = function() {};
+      
 		var json = $(this).serializeArray();
 
 		$.each(json, function (i, field) {
