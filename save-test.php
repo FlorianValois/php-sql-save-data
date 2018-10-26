@@ -47,17 +47,13 @@ function result_data($var){
 function test_init(){
 	register_setting( 'myplugin_options_group', 'myplugin_option_name' );
       echo "<h1>Titre</h1>";
-  
-//	global $wpdb;
-//	$name_yolo = 'form_01';
-//  $yolo = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}keliosis WHERE name='$name_yolo'");
 	
   ?>
   <form id="save-test" class="formAjax" method="post" name="">
 		<?php
 		$data = result_data('form_01');
 		?>
-    <input type="text" id="" class="regular-text" name="input_1" style="width: 300px;" value="">
+    <input type="text" id="" class="regular-text" name="input_1" style="width: 300px;" value="<?= $data['input_1']; ?>">
     <input type="text" id="" name="input_11" value="">
     <input type="text" id="" name="input_12" value="">
     <button type="submit">Envoyer <i class="far fa-save"></i></button>
@@ -82,6 +78,8 @@ function test_init(){
     <button type="submit">Envoyer <i class="far fa-save"></i></button>
     <input type="hidden" name="submitForm" value="form_03">
   </form>
+  
+  <div id="yolo">z</div>
 
   <?php
 	
