@@ -37,14 +37,26 @@ function import_style_script2() {
     );
 }
 
+function result_data($var){
+	global $wpdb;
+	$results = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}keliosis WHERE name='$var'");
+	$data = unserialize($results[0]->value);
+	return $data;
+}
+
 function test_init(){
 	register_setting( 'myplugin_options_group', 'myplugin_option_name' );
       echo "<h1>Titre</h1>";
   
+//	global $wpdb;
+//	$name_yolo = 'form_01';
+//  $yolo = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}keliosis WHERE name='$name_yolo'");
+	
   ?>
-  
   <form id="save-test" class="formAjax" method="post" name="">
-
+		<?php
+		$data = result_data('form_01');
+		?>
     <input type="text" id="" class="regular-text" name="input_1" style="width: 300px;" value="">
     <input type="text" id="" name="input_11" value="">
     <input type="text" id="" name="input_12" value="">
@@ -53,6 +65,9 @@ function test_init(){
   </form>
   
   <form id="save-test-2" class="formAjax" method="post" action="" name="">
+   	<?php
+		$data = result_data('form_02');
+		?>
     <input type="text" id="" name="input_2" value="">
     <input type="text" id="" name="input_21" value="">
     <input type="text" id="" name="input_22" value="">
@@ -67,37 +82,8 @@ function test_init(){
     <button type="submit">Envoyer <i class="far fa-save"></i></button>
     <input type="hidden" name="submitForm" value="form_03">
   </form>
-<!--
-  <script>
-  jQuery('.formAjax').on('submit', function(){
-    jQuery(this).addClass('yolo');
-  });
-  </script>
--->
-  <div id="yolo"></div>
 
   <?php
-		$insertDataRow = array(
-		'form_01',
-		'form_02',
-		'form_03'
-	);
-	
-	foreach($insertDataRow as $key){
-		echo $key.'<br>';
-	}
-  
-  
-  
-  global $wpdb;
-  $name_data = 'form_01';
-  $results = $wpdb->query( "SELECT * FROM {$wpdb->prefix}keliosis WHERE name='$name_data'");
-  foreach($results as $item){
-      $id = $item->id;
-      $name = $item->name;
-      $value = $item->value;
-  var_dump($name.$value);
-  }
 	
 }
 
