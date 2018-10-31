@@ -22,6 +22,9 @@ jQuery(document).ready(function ($) {
       action: 'wpk_saveData',
       data: json
     }
+		
+		console.log(postData);
+		
     $.ajax({
       type: "POST",
       dataType: "json",
@@ -29,10 +32,29 @@ jQuery(document).ready(function ($) {
       url: wpk_ajax.ajaxurl,
       success: function (postData) {
         if (postData.update) {
-          console.log('Sauvegardé !')
+          console.log('Sauvegardé !');
         }
       }
     });
   });
+	
+	$('#reset').on('click', function(e){
+		e.preventDefault();
+		
+		var postData = {
+      action: 'wpk_resetData',
+    }
+		
+		$.post({
+      data: postData,
+      url: wpk_ajax.ajaxurl,
+      success: function (response) {
+//        if (postData.reset) {
+          console.log(response);
+//        }
+      }
+    });
+		
+	});
 
 });

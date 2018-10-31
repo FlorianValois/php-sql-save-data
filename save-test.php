@@ -22,7 +22,19 @@ function test_plugin_setup_menu(){
 add_action( 'admin_init', 'import_style_script2' );
 function import_style_script2() {
   $pluginDirectory = plugins_url() .'/'. basename(dirname(__FILE__));
-  wp_enqueue_style( 'font-awesome', 'https://use.fontawesome.com/releases/v5.1.1/css/all.css' );
+	
+  wp_enqueue_style( 
+		'font-awesome', 
+		'https://use.fontawesome.com/releases/v5.1.1/css/all.css' 
+	);
+	
+	wp_enqueue_script( 
+		'jquery', 
+		'https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js', 
+		false, 
+		null
+	);
+	
 	wp_enqueue_script(
       'ajax-script', 		
 			$pluginDirectory.'/script.js',
@@ -79,7 +91,9 @@ function test_init(){
     <input type="hidden" name="submitForm" value="form_03">
   </form>
   
-  <div id="yolo">z</div>
+  <div id="yolo"></div>
+  
+  <button id="reset" type="button">Reset</button>
 
   <?php
 	
@@ -102,7 +116,6 @@ function save_options() {
                 $yolo = str_replace($old, $new, $key['value']);
 			    $table[$key['name']] = htmlspecialchars($yolo);
 //			    $table[$key['name']] = htmlspecialchars($key['value']);
-                var_dump($table[$key['name']]);
             }
 		}		
 	
@@ -123,16 +136,36 @@ function save_options() {
 				$name = $item->name;
 				$value = $item->value;
 			}
-			$test = $wpdb->query( "UPDATE {$wpdb->prefix}keliosis SET value = '$data' WHERE name = '$sectionName'" );
+			
+			$response = $wpdb->query( "UPDATE {$wpdb->prefix}keliosis SET value = '$data' WHERE name = '$sectionName'" );
 			
 			// Sauvegarde des data
 			$update_options = json_encode(array(
-					'update' => $test
+					'update' => $response
 			));
 
 			echo $update_options;
 		} 
 
+		die(); 
+}
+
+add_action( 'wp_ajax_' . 'wpk_resetData', 'reset_options' );
+add_action( 'wp_ajax_nopriv_' . 'wpk_resetData', 'reset_options' );
+function reset_options() {
+	
+		global $wpdb;
+	
+		$response = $wpdb->query( "UPDATE {$wpdb->prefix}keliosis SET value = ''");
+	
+	var_dump($response);
+	
+		$results = json_encode(array(
+			'reset' => $response
+		));
+	
+		echo $results;
+		
 		die(); 
 }
 
@@ -155,16 +188,6 @@ function jal_install() {
 	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 	
 	dbDelta( $sql );
-
-}
-
-function jal_uninstall() {
-	 global $wpdb;
-	 $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}keliosis");
-}
-
-function jal_install_data() {
-	global $wpdb;
 	
 	$table_name = $wpdb->prefix.'keliosis';
 	
@@ -177,15 +200,13 @@ function jal_install_data() {
 	foreach($insertDataRow as $key){
 		$wpdb->query( "INSERT {$wpdb->prefix}keliosis SET name = '$key'" );
 	}
-  
+
 }
 
-//function keliosis_data($name_data){
-//  global $wpdb;
-//  
-//  die();
-//}
+function jal_uninstall() {
+	 global $wpdb;
+	 $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}keliosis");
+}
 
 register_activation_hook( __FILE__, 'jal_install' );
-register_deactivation_hook( __FILE__, 'jal_uninstall' );
-register_activation_hook( __FILE__, 'jal_install_data' );
+register_uninstall_hook( __FILE__, 'jal_uninstall' );
