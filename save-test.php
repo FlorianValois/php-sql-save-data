@@ -62,31 +62,34 @@ function test_init(){
 	
   ?>
   <form id="save-test" class="formAjax" method="post" name="">
-		<?php
-		$data = result_data('form_01');
-		?>
+    <?php
+    $data = result_data('form_01');
+    ?>
     <input type="text" id="" class="regular-text" name="input_1" style="width: 300px;" value="<?= $data['input_1']; ?>">
-    <input type="text" id="" name="input_11" value="">
-    <input type="text" id="" name="input_12" value="">
+    <input type="text" id="" name="input_11" value="<?= $data['input_11']; ?>">
+    <input type="text" id="" name="input_12" value="<?= $data['input_12']; ?>">
     <button type="submit">Envoyer <i class="far fa-save"></i></button>
     <input type="hidden" name="submitForm" value="form_01">
   </form>
   
   <form id="save-test-2" class="formAjax" method="post" action="" name="">
    	<?php
-		$data = result_data('form_02');
-		?>
-    <input type="text" id="" name="input_2" value="">
-    <input type="text" id="" name="input_21" value="">
-    <input type="text" id="" name="input_22" value="">
+    $data = result_data('form_02');
+    ?>
+    <input type="text" id="" name="input_2" value="<?= $data['input_2']; ?>">
+    <input type="text" id="" name="input_21" value="<?= $data['input_21']; ?>">
+    <input type="text" id="" name="input_22" value="<?= $data['input_22']; ?>">
     <button type="submit">Envoyer <i class="far fa-save"></i></button>
     <input type="hidden" name="submitForm" value="form_02">
   </form>
   
   <form id="save-test-3" class="formAjax" method="post" action="" name="">
-    <input type="text" id="" name="input_3" value="">
-    <input type="text" id="" name="input_31" value="">
-    <input type="text" id="" name="input_32" value="">
+    <?php
+    $data = result_data('form_03');
+    ?>
+    <input type="text" id="" name="input_3" value="<?= $data['input_3']; ?>">
+    <input type="text" id="" name="input_31" value="<?= $data['input_31']; ?>">
+    <input type="text" id="" name="input_32" value="<?= $data['input_32']; ?>">
     <button type="submit">Envoyer <i class="far fa-save"></i></button>
     <input type="hidden" name="submitForm" value="form_03">
   </form>
@@ -94,6 +97,12 @@ function test_init(){
   <div id="yolo"></div>
   
   <button id="reset" type="button">Reset</button>
+  
+  <br><br><br><br><br><br>
+  
+  <button id="export" type="button">Export</button><br>
+  
+  <textarea name="" id="exportResult" cols="100" rows="10"></textarea>
 
   <?php
 	
@@ -157,9 +166,7 @@ function reset_options() {
 		global $wpdb;
 	
 		$response = $wpdb->query( "UPDATE {$wpdb->prefix}keliosis SET value = ''");
-	
-	var_dump($response);
-	
+		
 		$results = json_encode(array(
 			'reset' => $response
 		));
@@ -167,6 +174,29 @@ function reset_options() {
 		echo $results;
 		
 		die(); 
+}
+
+add_action( 'wp_ajax_' . 'wpk_exportData', 'export_options' );
+add_action( 'wp_ajax_nopriv_' . 'wpk_exportData', 'export_options' );
+function export_options() {
+	
+  global $wpdb;
+
+  $results = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}keliosis");
+  
+  foreach($results as $item){
+      $id = $item->id;
+      $name = $item->name;
+      $value = $item->value;
+  }
+  
+  $export_options = json_encode(array(
+    'exportData' => $results
+  ));
+
+  echo $export_options;
+  
+  die(); 
 }
 
 
