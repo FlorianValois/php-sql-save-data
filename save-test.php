@@ -52,7 +52,7 @@ function import_style_script2() {
 function result_data($var){
 	global $wpdb;
 	$results = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}keliosis WHERE name='$var'");
-	$data = unserialize($results[0]->value);
+	$data = $results[0]->value;
 	return $data;
 }
 
@@ -63,33 +63,33 @@ function test_init(){
   ?>
   <form id="save-test" class="formAjax" method="post" name="">
     <?php
-    $data = result_data('form_01');
+    $data = json_decode(result_data('form_01'));
     ?>
-    <input type="text" id="" class="regular-text" name="input_1" style="width: 300px;" value="<?= $data['input_1']; ?>">
-    <input type="text" id="" name="input_11" value="<?= $data['input_11']; ?>">
-    <input type="text" id="" name="input_12" value="<?= $data['input_12']; ?>">
+    <input type="text" id="" class="regular-text" name="input_1" style="width: 300px;" value="<?= $data->input_1; ?>">
+    <input type="text" id="" name="input_11" value="<?= $data->input_11; ?>">
+    <input type="text" id="" name="input_12" value="<?= $data->input_12; ?>">
     <button type="submit">Envoyer <i class="far fa-save"></i></button>
     <input type="hidden" name="submitForm" value="form_01">
   </form>
   
   <form id="save-test-2" class="formAjax" method="post" action="" name="">
    	<?php
-    $data = result_data('form_02');
+    $data = json_decode(result_data('form_02'));
     ?>
-    <input type="text" id="" name="input_2" value="<?= $data['input_2']; ?>">
-    <input type="text" id="" name="input_21" value="<?= $data['input_21']; ?>">
-    <input type="text" id="" name="input_22" value="<?= $data['input_22']; ?>">
+    <input type="text" id="" name="input_2" value="<?= $data->input_2; ?>">
+    <input type="text" id="" name="input_21" value="<?= $data->input_21; ?>">
+    <input type="text" id="" name="input_22" value="<?= $data->input_22; ?>">
     <button type="submit">Envoyer <i class="far fa-save"></i></button>
     <input type="hidden" name="submitForm" value="form_02">
   </form>
   
   <form id="save-test-3" class="formAjax" method="post" action="" name="">
     <?php
-    $data = result_data('form_03');
+    $data = json_decode(result_data('form_03'));
     ?>
-    <input type="text" id="" name="input_3" value="<?= $data['input_3']; ?>">
-    <input type="text" id="" name="input_31" value="<?= $data['input_31']; ?>">
-    <input type="text" id="" name="input_32" value="<?= $data['input_32']; ?>">
+    <input type="text" id="" name="input_3" value="<?= $data->input_3; ?>">
+    <input type="text" id="" name="input_31" value="<?= $data->input_31; ?>">
+    <input type="text" id="" name="input_32" value="<?= $data->input_32; ?>">
     <button type="submit">Envoyer <i class="far fa-save"></i></button>
     <input type="hidden" name="submitForm" value="form_03">
   </form>
@@ -100,9 +100,15 @@ function test_init(){
   
   <br><br><br><br><br><br>
   
+  <textarea name="" id="exportResult" cols="100" rows="10"></textarea><br>
   <button id="export" type="button">Export</button><br>
   
-  <textarea name="" id="exportResult" cols="100" rows="10"></textarea>
+  <br><br><br><br><br><br>
+  
+	<textarea name="importData" id="importData" cols="100" rows="10"></textarea><br>
+	<button id="importBtn" type="button">Import</button>
+  
+  <div id="importTest"></div>
 
   <?php
 	
@@ -121,14 +127,16 @@ function save_options() {
                         
                         
 		foreach($_POST['data'] as $key){
-            if(!empty($key['value']) && $key['name'] != 'submitForm'){
-                $yolo = str_replace($old, $new, $key['value']);
+       if(!empty($key['value']) && $key['name'] != 'submitForm'){
+          $yolo = str_replace($old, $new, $key['value']);
 			    $table[$key['name']] = htmlspecialchars($yolo);
 //			    $table[$key['name']] = htmlspecialchars($key['value']);
-            }
+       }
 		}		
 	
-		$data = serialize($table);
+		$data = json_encode($table);
+	
+//	var_dump($table);
 	
 		foreach($_POST['data'] as $key){		
 			if($key['name'] === 'submitForm'){
@@ -189,15 +197,83 @@ function export_options() {
       $name = $item->name;
       $value = $item->value;
   }
-  
-  $export_options = json_encode(array(
-    'exportData' => $results
-  ));
+	  
+  $export_options = json_encode($results);
 
   echo $export_options;
   
   die(); 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+add_action( 'wp_ajax_' . 'wpk_importData', 'import_options' );
+add_action( 'wp_ajax_nopriv_' . 'wpk_importData', 'import_options' );
+function import_options() {
+	
+  global $wpdb;
+	
+	foreach($_POST["data"] as $key){
+		
+		$name = $key['name'];
+		$value = str_replace('\\', '', $key['value']);
+			
+		$response = $wpdb->query( "UPDATE {$wpdb->prefix}keliosis SET value = '$value' WHERE name = '$name'" );
+		
+		if($response === 1){
+			$results = true;
+		}
+	}
+				
+	$import_options = json_encode(array(
+		'import' => $results
+	));
+
+	echo $import_options;
+	
+  die();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 function jal_install() {
